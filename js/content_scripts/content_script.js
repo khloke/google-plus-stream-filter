@@ -16,6 +16,13 @@ chrome.extension.onMessage.addListener(
             sendResponse({response:"ok"});
         } else if (request.action == 'currentStatus') {
             sendResponse({response:localStorage['hideNoModPosts']});
+        } else if (request.action == 'toggle') {
+            if (localStorage['hideNoModPosts'] == 'true') {
+                localStorage.setItem("hideNoModPosts", false);
+            }  else {
+                localStorage.setItem("hideNoModPosts", true);
+            }
+            sendResponse({response:localStorage['hideNoModPosts']});
         } else {
             sendResponse({response:"fail"});
         }
