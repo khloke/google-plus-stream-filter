@@ -6,38 +6,7 @@
  * Time: 1:15 AM
  */
 
-chrome.extension.onMessage.addListener(
-    function(request, sender, sendResponse) {
-        if (request.action == 'pause') {
-            localStorage.setItem("hideNoModPosts", false);
-            sendResponse({response:"ok"});
-        } else if (request.action == 'unpause') {
-            localStorage.setItem("hideNoModPosts", true);
-            sendResponse({response:"ok"});
-        } else if (request.action == 'currentStatus') {
-            sendResponse({response:localStorage['hideNoModPosts']});
-        } else if (request.action == 'toggle') {
-            if (localStorage['hideNoModPosts'] == 'true') {
-                localStorage.setItem("hideNoModPosts", false);
-            }  else {
-                localStorage.setItem("hideNoModPosts", true);
-            }
-            sendResponse({response:localStorage['hideNoModPosts']});
-        } else {
-            sendResponse({response:"fail"});
-        }
-    }
-);
-
-if (localStorage['hideNoModPosts'] == 'true') {
-    hideNoModPosts();
-
-    $('.ow').bind('DOMNodeInserted', function(event) {
-        hideNoModPosts()
-    });
-}
-
-function hideNoModPosts() {
+function hidePosts() {
     var first = true;
 
     $("[id^=update]").each(function () {
@@ -52,3 +21,28 @@ function hideNoModPosts() {
         }
     });
 }
+
+if (localStorage['hideNoModPosts'] == 'true') {
+    hidePosts();
+
+    $('.ow').bind('DOMNodeInserted', function(event) {
+        hidePosts()
+    });
+}
+
+chrome.extension.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        if (request.action == 'currentStatus') {
+            sendResponse({response:localStorage['hideNoModPosts']});
+        } else if (request.action == 'toggle') {
+            if (localStorage['hideNoModPosts'] == 'true') {
+                localStorage.setItem("hideNoModPosts", false);
+            }  else {
+                localStorage.setItem("hideNoModPosts", true);
+            }
+            sendResponse({response:localStorage['hideNoModPosts']});
+        } else {
+            sendResponse({response:"Unsupported Message Received"});
+        }
+    }
+);
