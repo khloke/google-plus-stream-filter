@@ -32,17 +32,23 @@ chrome.extension.onMessage.addListener(
 if (localStorage['hideNoModPosts'] == 'true') {
     hideNoModPosts();
 
-    $('.ow').bind('DOMNodeInserted DOMNodeRemoved', function(event) {
+    $('.ow').bind('DOMNodeInserted', function(event) {
         hideNoModPosts()
     });
 }
 
 function hideNoModPosts() {
-    $('.ow .Tg').each(function () {
-        var hasModTools = $(this).find('.hE');
+    var first = true;
 
+    $("[id^=update]").each(function () {
+        var hasModTools = $(this).find('.hE');
         if (hasModTools.length <= 0) {
-            $(this).hide();
+            if (!first) {
+                $(this).remove();
+            } else {
+                $(this).hide();
+            }
+            first = false;
         }
     });
 }
