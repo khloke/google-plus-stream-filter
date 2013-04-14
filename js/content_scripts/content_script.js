@@ -35,7 +35,8 @@ function hidePosts() {
                                 break;
 
                             case 'content':
-                                //TODO: Filter by content
+                                var contentRule = checkContentRule($(this), rule);
+                                ruleMatch.push(contentRule);
                                 break;
 
                             case 'attachment':
@@ -86,13 +87,15 @@ function hidePosts() {
     });
 }
 
-if (localStorage['hideNoModPosts'] == 'true') {
-    hidePosts();
+$(document).ready(function() {
+    if (localStorage['hideNoModPosts'] == 'true') {
+        hidePosts();
 
-    $('.ow').bind('DOMNodeInserted', function() {
-        hidePosts()
-    });
-}
+        $('.ow').bind('DOMNodeInserted', function() {
+            hidePosts()
+        });
+    }
+});
 
 chrome.extension.onMessage.addListener(
     function(request, sender, sendResponse) {
@@ -112,7 +115,7 @@ chrome.extension.onMessage.addListener(
 );
 
 function checkTimeRule(post, rule) {
-    var datetime = post.find('.ik .Bf').attr('title');
+    var datetime = post.find('.ik.Bf').attr('title');
     var published = new Date(datetime);
     var conditionDatetime = rule.time;
     var condition = rule.option3;
@@ -137,6 +140,17 @@ function checkAuthorRule(post, rule) {
     }
 }
 
+function checkContentRule(post, rule) {
+    var content = post.find('.eE.Fp').text();
+    var pureContent = getPureContent(content);
+
+    if (rule.option3 == 'is') {
+        return pureContent == rule.input;
+    } else {
+        return pureContent.indexOf(rule.input) != -1;
+    }
+}
+
 function checkAttachmentRule(post, rule) {
     if (rule.attachment == 'image') {
         return post.find('.ev.aG').length > 0;
@@ -150,4 +164,8 @@ function checkAttachmentRule(post, rule) {
 function checkModeratorRule(post) {
     var hasModTools = post.find('.hE');
     return hasModTools.length > 0;
+}
+
+function getPureContent(text) {
+    return text.replace(/<[^>]*>/g, "");
 }
