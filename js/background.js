@@ -29,8 +29,8 @@ chrome.browserAction.onClicked.addListener(function (tab) {
 
 chrome.extension.onMessage.addListener(
     function(request, sender, sendResponse) {
-        if (request.action == 'getRules') {
-            sendResponse({response:localStorage['rules']});
+        if (request.action == 'getSettings') {
+            sendResponse({response:localStorage['settings']});
         } else {
             sendResponse({response:"Unsupported Message Received"});
         }

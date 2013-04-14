@@ -7,12 +7,34 @@
 </head>
 <body>
 <div class="container">
+    <style>
+        select {
+            margin-bottom: 0;
+        }
+
+        .option {
+            margin-bottom: 0;
+        }
+    </style>
     <form>
         <fieldset>
             <legend>Options</legend>
-            <div id="ruleList">
-
+            <div class="row" style="margin-bottom: 10px;">
+                <div class="span12">
+                    <select id="showHideSelect">
+                        <option value="hide">Hide all</option>
+                        <option value="show">Show only</option>
+                    </select>
+                    <span>posts that matches</span>
+                    <select id="allAnySelect">
+                        <option value="all">all</option>
+                        <option value="any">any</option>
+                    </select>
+                    <span>of the rules listed below:</span>
+                </div>
             </div>
+            <div class="row"><div class="span12"><ul id="ruleList">
+            </ul></div></div>
             <input id="newRuleBtn" type="button" class="btn" value="New Rule"/>
             <input id="saveBtn" type="button" class="btn btn-primary" value="Save"/>
         </fieldset>

@@ -8,8 +8,7 @@
 $(document).ready(function() {
     $('#newRuleBtn').click(function() {newRule();});
     $('#saveBtn').click(function() {saveRules();});
-    newRule();
-    updateOptions($('.option-2'));
+    loadRules();
 });
 
 var choices = {
@@ -39,10 +38,14 @@ function bindEvents() {
     option2.change(function() {
         updateOptions($(this));
     });
+    $('.icon-remove').click(function() {
+        var parent = $(this).parent('li');
+        parent.remove();
+    })
 }
 
 function updateOptions(option2) {
-    option2.siblings(".option-1 ~ .option").hide();
+    option2.siblings("* ~ .option").hide();
     var selected = option2.val();
     var availChoices = choices[selected].option3;
     var showElements = choices[selected].showElements;
@@ -66,21 +69,22 @@ function updateOptions(option2) {
     }
 }
 
-function newRule() {
+function newRule(index) {
+    var id;
+    if (index != undefined) {
+        id = 'id="rule-' + index + '" ';
+    } else {
+        id = '';
+    }
     var ruleList = $('#ruleList');
     ruleList.append(
-            '<div class="ruleInputs">' +
-                '<select class="input-medium option option-1">' +
-                    '<option value="false">Do not show</option>' +
-                    '<option value="true">Show</option>' +
-                '</select>' +
-                '<span style="margin-botton:10px;">&#32;if post&#32;</span>' +
+            '<li ' + id + 'class="ruleInputs" style="margin-bottom:10px;">' +
                 '<select class="input-medium option option-2">' +
-                    '<option value="time">time</option>' +
-                    '<option value="author">author</option>' +
-                    '<option value="content">content</option>' +
-                    '<option value="attachment">attachment</option>' +
-                    '<option value="moderator">is moderator only</option>' +
+                    '<option value="time">Publish time</option>' +
+                    '<option value="author">Author</option>' +
+                    '<option value="content">Content</option>' +
+                    '<option value="attachment">Attachment</option>' +
+                    '<option value="moderator">Is moderator only</option>' +
                 '</select>&#32;' +
                 '<select class="input-medium option option-3"></select>&#32;' +
                 '<select class="input-medium option attachment-select" style="display: none;">' +
@@ -88,9 +92,10 @@ function newRule() {
                     '<option value="video">a video</option>' +
                     '<option value="link">a link</option>' +
                 '</select>&#32;' +
-                '<input type="text" class="input-medium option text-input" style="display: none"/>&#32;' +
-                '<input type="datetime-local" class="option time-input" style="display: none"/>&#32;' +
-            '</div>'
+                '<input type="text" class="input-medium option text-input" style="display: none; margin-bottom:0;"/>&#32;' +
+                '<input type="datetime-local" class="option time-input" style="display: none; margin-bottom:0;"/>&#32;' +
+                '<i class="icon-remove" style="cursor: pointer;"/>' +
+            '</li>'
     );
     bindEvents();
     $('.option-2').change();
@@ -101,7 +106,6 @@ function saveRules() {
 
     $('#ruleList').children().each(function() {
         var rule = {
-            showPost:   $(this).find('.option-1').val(),
             option2:    $(this).find('.option-2').val(),
             option3:    $(this).find('.option-3').val(),
             attachment: $(this).find('.attachment-select').val(),
@@ -112,5 +116,46 @@ function saveRules() {
         rules.push(rule);
     });
 
-    localStorage.setItem('rules', JSON.stringify(rules));
+    var settings = {
+        show: $('#showHideSelect').val(),
+        all: $('#allAnySelect').val(),
+        rules: rules
+    };
+
+    localStorage.setItem('settings', JSON.stringify(settings));
+}
+
+function loadRules() {
+    var storageSettings = localStorage['settings'];
+
+    if (storageSettings) {
+        var settings = JSON.parse(storageSettings);
+        var rules = settings.rules;
+
+        $('#showHideSelect').val(settings.show);
+        $('#allAnySelect').val(settings.all);
+
+        for (var i = 0; i < rules.length; i++) {
+            var rule = rules[i];
+            newRule(i);
+            var ruleElement = $('#rule-' + i);
+            ruleElement.find('.option-2').val(rule.option2);
+            if (rule.option3) {
+                ruleElement.find('.option-3').val(rule.option3);
+            }
+            if (rule.attachment) {
+                ruleElement.find('.attachment-select').val(rule.attachment);
+            }
+            if (rule.input) {
+                ruleElement.find('.text-input').val(rule.input);
+            }
+            if (rule.time) {
+                ruleElement.find('.time-input').val(rule.time);
+            }
+            ruleElement.find('.option-2').change();
+        }
+    } else {
+        newRule();
+        updateOptions($('.option-2'));
+    }
 }
