@@ -26,3 +26,13 @@ chrome.browserAction.onClicked.addListener(function (tab) {
         chrome.tabs.reload(tab.id);
     });
 });
+
+chrome.extension.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        if (request.action == 'getRules') {
+            sendResponse({response:localStorage['rules']});
+        } else {
+            sendResponse({response:"Unsupported Message Received"});
+        }
+    }
+);

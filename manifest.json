@@ -1,14 +1,15 @@
 {
     "manifest_version": 2,
     "version": "1.0",
-    "name": "Google+ Community Moderating Filter",
-    "description": "A simple extension that when enabled, shows only posts that needs moderating.",
+    "name": "Google+ Stream Filter",
+    "description": "A simple extension for filtering posts on Google+.",
     "permissions": [ "tabs", "http://plus.google.com/" ],
     "icons": {
     	"16": "img/icon16.png",
     	"48": "img/icon48.png",
     	"128": "img/icon128.png"
     },
+    "options_page": "options.html",
     "browser_action": {
         "default_icon": "img/icon48_disabled.png"
     },
